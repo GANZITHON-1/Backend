@@ -14,9 +14,13 @@ public enum SuccessStatus {
     //회원가입
     SIGNUP_SUCCESS(HttpStatus.CREATED, "AUTH200", "회원가입 성공"),
     //로그인
-    LOGIN_SUCCESS(HttpStatus.OK, "AUTH200", "로그인 성공.");
+    LOGIN_SUCCESS(HttpStatus.OK, "AUTH200", "로그인 성공."),
 
-    // 도메인별로
+    // REPORT
+    REPORT_CREATED(HttpStatus.CREATED, "REPORT201", "사고 제보가 생성되었습니다."),
+    REPORT_UPDATED(HttpStatus.OK, "REPORT200", "사고 제보가 수정되었습니다."),
+    REPORT_DELETED(HttpStatus.NO_CONTENT, "REPORT204", "사고 제보가 삭제되었습니다.");
+
     private final HttpStatus status;
     private final String code;
     private final String message;
