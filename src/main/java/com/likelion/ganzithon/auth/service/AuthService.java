@@ -24,20 +24,20 @@ public class AuthService {
     //회원가입
     public Response<?> signup(SignupRequest request) {
         // 1) 비밀번호 일치 검사
-        if (!request.getPassword().equals(request.getPasswordConfirm())) {
+        if (!request.password().equals(request.passwordConfirm())) {
             throw new CustomException(ErrorStatus.SIGNUP_INVALID_PARAMETER);
         }
         // 2) 아이디 및 이메일 중복 체크
-        if (userRepository.existsByEmail(request.getEmail()) ||
-                userRepository.existsByNickname(request.getNickname())) {
+        if (userRepository.existsByEmail(request.email()) ||
+                userRepository.existsByNickname(request.nickname())) {
             throw new CustomException(ErrorStatus.SIGNUP_DUPLICATE);
         }
         // 3) 유저 저장
-        String encodePassword = passwordEncoder.encode(request.getPassword());
+        String encodePassword = passwordEncoder.encode(request.password());
         User user = User.builder()
-                .name(request.getName())
-                .email(request.getEmail())
-                .nickname(request.getNickname())
+                .name(request.name())
+                .email(request.email())
+                .nickname(request.nickname())
                 .password(encodePassword)
                 .build();
 
@@ -58,10 +58,10 @@ public class AuthService {
     //로그인
     public Response<?> login(LoginRequest request) {
         //1) 닉네임으로(userId)으로 사용자 조회
-        User user = userRepository.findByNickname(request.getUserId())
+        User user = userRepository.findByNickname(request.userId())
                 .orElseThrow(() -> new CustomException(ErrorStatus.LOGIN_INVALID_PARAMETER));
         //2) 비밀번호 검증
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+        if (!passwordEncoder.matches(request.password(), user.getPassword())) {
             throw new CustomException(ErrorStatus.LOGIN_INVALID_PARAMETER);
         }
         //3) JWT 토큰 생성
