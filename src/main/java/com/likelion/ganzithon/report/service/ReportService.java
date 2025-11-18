@@ -19,10 +19,10 @@ public class ReportService {
 
     private final ReportRepository reportRepository;
 
-    public ReportRes create(ReportCreateReq req) {
+    public ReportRes create(Long userId, ReportCreateReq req) {
 
         Report report = Report.create(
-                req.userId(),
+                userId,
                 req.title(),
                 req.description(),
                 req.imageUrl(),

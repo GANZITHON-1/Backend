@@ -8,10 +8,6 @@ import jakarta.validation.constraints.NotNull;
 @Schema(description = "신고 생성 요청 DTO")
 public record ReportCreateReq(
 
-        @Schema(description = "사용자 ID", example = "1")
-        @NotNull(message = "userId는 필수 값입니다.")
-        Long userId,
-
         @Schema(description = "신고 제목", example = "불법 주정차 차량 신고")
         @NotBlank(message = "title은 필수 값입니다.")
         String title,
