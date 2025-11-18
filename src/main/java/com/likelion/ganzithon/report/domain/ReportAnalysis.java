@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
@@ -32,7 +33,7 @@ public class ReportAnalysis {
     private String aiModelVersion;
 
     @Column(name = "confidence_score", nullable = false, precision = 4, scale = 2)
-    private Double confidenceScore;
+    private BigDecimal confidenceScore;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -60,7 +61,7 @@ public class ReportAnalysis {
         a.summaryText = "";
         a.severityLevel = SeverityLevel.안전;
         a.aiModelVersion = "";
-        a.confidenceScore = 0.0;
+        a.confidenceScore = BigDecimal.valueOf(0.0);
         a.generatedAt = LocalDateTime.now();
         a.ragEnabled = false;
         a.retrievedSources = "[]";
@@ -80,7 +81,7 @@ public class ReportAnalysis {
         this.summaryText = summaryText;
         this.severityLevel = severity;
         this.aiModelVersion = modelVersion;
-        this.confidenceScore = confidence;
+        this.confidenceScore = BigDecimal.valueOf(confidence);
         this.ragEnabled = ragEnabled;
         this.retrievedSources = retrievedSources;
         this.contextCount = contextCount;
