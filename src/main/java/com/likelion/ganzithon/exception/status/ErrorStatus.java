@@ -26,6 +26,9 @@ public enum ErrorStatus {
     //PROFILE 4XX
     //회원정보 수정
     PROFILE_INVALID_PARAMETER(HttpStatus.BAD_REQUEST, "PROFILE400", "이메일 형식이 올바르지 않습니다."),
+    
+    //MYPAGE 4XX
+    MYREPORTS_NOT_FOUND(HttpStatus.NOT_FOUND, "MYREPORTS404", "작성한 제보가 없습니다."),
 
     // REPORT 4xx
     REPORT_BAD_REQUEST(HttpStatus.BAD_REQUEST, "REPORT400", "사고 제보 요청 값이 올바르지 않습니다."),

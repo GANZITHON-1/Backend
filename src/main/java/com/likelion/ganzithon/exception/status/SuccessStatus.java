@@ -18,6 +18,9 @@ public enum SuccessStatus {
 
     //POFILE
     PROFILE_UPDATE_SUCCESS(HttpStatus.OK, "PROFILE200", "성공적으로 수정되었습니다."),
+    
+    //MYPAGE
+    MYREPORTS_SUCCESS(HttpStatus.OK, "MYREPORTS200", "제보 목록 조회 성공"),
 
     // REPORT
     REPORT_CREATED(HttpStatus.CREATED, "REPORT201", "사고 제보가 생성되었습니다."),
