@@ -19,7 +19,11 @@ public enum SuccessStatus {
     // REPORT
     REPORT_CREATED(HttpStatus.CREATED, "REPORT201", "사고 제보가 생성되었습니다."),
     REPORT_UPDATED(HttpStatus.OK, "REPORT200", "사고 제보가 수정되었습니다."),
-    REPORT_DELETED(HttpStatus.NO_CONTENT, "REPORT204", "사고 제보가 삭제되었습니다.");
+    REPORT_DELETED(HttpStatus.NO_CONTENT, "REPORT204", "사고 제보가 삭제되었습니다."),
+
+    // AI
+    AI_REPORT_DETAIL(HttpStatus.OK, "AI200", "RAG 기반 사고 제보 상세 및 요약 조회 성공"),
+    AI_FALLBACK_SUMMARY(HttpStatus.OK, "AI201", "RAG 검색 결과가 없어 기본 요약 모델로 처리되었습니다.");
 
     private final HttpStatus status;
     private final String code;
