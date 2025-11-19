@@ -16,6 +16,9 @@ public enum SuccessStatus {
     //로그인
     LOGIN_SUCCESS(HttpStatus.OK, "AUTH200", "로그인 성공."),
 
+    //POFILE
+    PROFILE_UPDATE_SUCCESS(HttpStatus.OK, "PROFILE200", "성공적으로 수정되었습니다."),
+
     // REPORT
     REPORT_CREATED(HttpStatus.CREATED, "REPORT201", "사고 제보가 생성되었습니다."),
     REPORT_UPDATED(HttpStatus.OK, "REPORT200", "사고 제보가 수정되었습니다."),
