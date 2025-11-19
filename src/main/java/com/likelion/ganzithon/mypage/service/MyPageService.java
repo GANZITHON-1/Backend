@@ -6,17 +6,22 @@ import com.likelion.ganzithon.exception.CustomException;
 import com.likelion.ganzithon.exception.Response;
 import com.likelion.ganzithon.exception.status.ErrorStatus;
 import com.likelion.ganzithon.exception.status.SuccessStatus;
+import com.likelion.ganzithon.mypage.dto.MyReportDto;
 import com.likelion.ganzithon.mypage.dto.UpdateProfileRequest;
 import com.likelion.ganzithon.mypage.dto.UserProfileDto;
+import com.likelion.ganzithon.report.repository.ReportRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class MyPageService {
 
     private final UserRepository userRepository;
+    private final ReportRepository reportRepository;
 
     // 내 정보 수정
     @Transactional
@@ -43,7 +48,20 @@ public class MyPageService {
                 updatedUser.getName(),
                 updatedUser.getEmail()
         );
-
         return Response.success(SuccessStatus.PROFILE_UPDATE_SUCCESS, data);
+    }
+
+    // 제보 목록 조회
+    @Transactional(readOnly = true)
+    public Response<List<MyReportDto>> getMyReports(Long userId) {
+        List<com.likelion.ganzithon.report.domain.Report> reports = reportRepository.findByUserId(userId);
+        
+        if (reports.isEmpty()) {
+            throw new CustomException(ErrorStatus.MYREPORTS_NOT_FOUND);
+        }
+        List<MyReportDto> data = reports.stream()
+                .map(MyReportDto::from)
+                .toList();
+        return Response.success(SuccessStatus.MYREPORTS_SUCCESS, data);
     }
 }
