@@ -22,3 +22,8 @@ logging:
   level:
     org.hibernate.SQL: debug
     org.hibernate.type.descriptor.sql: trace
+
+upstage:
+  api-key: ${UPSTAGE_API_KEY}
+  base-url: https://api.upstage.ai/v1
+  model: solar-pro2
