@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Collections;
 
 @Component
 @RequiredArgsConstructor
@@ -28,22 +29,29 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String header = request.getHeader("Authorization");
         String token = null;
-        String userId = null;
+        String userIdStr = null;
 
         if (header != null && header.startsWith("Bearer ")) {
             token = header.substring(7);
             if (JwtUtil.validateToken(token)) {
-                userId = JwtUtil.getUserIdFromToken(token);
+                userIdStr = JwtUtil.getUserIdFromToken(token);
             }
         }
 
-        if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            User user = userRepository.findByNickname(userId).orElse(null);
-            if (user != null) {
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(user, null, null);
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+        if (userIdStr != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            try {
+                Long userId = Long.parseLong(userIdStr);
+                // findById(userId)로 변경
+                // JWT 토큰 userId로 조회
+                User user = userRepository.findById(userId).orElse(null);
+                if (user != null) {
+                    UsernamePasswordAuthenticationToken authentication =
+                            new UsernamePasswordAuthenticationToken(user, null, Collections.emptyList());
+                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
+            } catch (NumberFormatException e) {
+                // userId 파싱 실패 시 무시
             }
         }
 
