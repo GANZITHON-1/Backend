@@ -21,9 +21,18 @@ public enum ErrorStatus {
     SIGNUP_INVALID_PARAMETER(HttpStatus.BAD_REQUEST, "AUTH400", "비밀번호가 일치하지 않습니다."), // 비밀번호 일치 실패
     SIGNUP_DUPLICATE(HttpStatus.CONFLICT, "AUTH409", "이미 존재하는 이메일 또는 닉네임입니다."),    // 이메일 및 아이디 중복 체크 실패
     //로그인
-    LOGIN_INVALID_PARAMETER(HttpStatus.UNAUTHORIZED, "AUTH401", "아이디 또는 비밀번호가 일치하지 않습니다.");
+    LOGIN_INVALID_PARAMETER(HttpStatus.UNAUTHORIZED, "AUTH401", "아이디 또는 비밀번호가 일치하지 않습니다."),
 
-    // 도메인별로
+    //PROFILE 4XX
+    //회원정보 수정
+    PROFILE_INVALID_PARAMETER(HttpStatus.BAD_REQUEST, "PROFILE400", "이메일 형식이 올바르지 않습니다."),
+    
+    //MYPAGE 4XX
+    MYREPORTS_NOT_FOUND(HttpStatus.NOT_FOUND, "MYREPORTS404", "작성한 제보가 없습니다."),
+
+    // REPORT 4xx
+    REPORT_BAD_REQUEST(HttpStatus.BAD_REQUEST, "REPORT400", "사고 제보 요청 값이 올바르지 않습니다."),
+    REPORT_NOT_FOUND(HttpStatus.NOT_FOUND, "REPORT404", "사고 제보를 찾을 수 없습니다.");
 
     private final HttpStatus status;
     private final String code;
