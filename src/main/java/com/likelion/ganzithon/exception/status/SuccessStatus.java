@@ -16,11 +16,11 @@ public enum SuccessStatus {
     //로그인
     LOGIN_SUCCESS(HttpStatus.OK, "AUTH200", "로그인 성공."),
 
-    //PROFILE 2XX
-    //회원정보 수정
-    PROFILE_UPDATE_SUCCESS(HttpStatus.OK, "PROFILE200", "성공적으로 수정되었습니다.");
+    // REPORT
+    REPORT_CREATED(HttpStatus.CREATED, "REPORT201", "사고 제보가 생성되었습니다."),
+    REPORT_UPDATED(HttpStatus.OK, "REPORT200", "사고 제보가 수정되었습니다."),
+    REPORT_DELETED(HttpStatus.NO_CONTENT, "REPORT204", "사고 제보가 삭제되었습니다.");
 
-    // 도메인별로
     private final HttpStatus status;
     private final String code;
     private final String message;
