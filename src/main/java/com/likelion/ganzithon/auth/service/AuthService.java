@@ -53,7 +53,7 @@ public class AuthService {
 
         return Response.success(SuccessStatus.SIGNUP_SUCCESS, data);
 
- }
+    }
 
     //로그인
     public Response<?> login(LoginRequest request) {
@@ -65,7 +65,8 @@ public class AuthService {
             throw new CustomException(ErrorStatus.LOGIN_INVALID_PARAMETER);
         }
         //3) JWT 토큰 생성
-        String token = JwtUtil.generateToken(user.getNickname());
+        // userId를 저장하여 userId로 직접 조회 가능하도록 수정
+        String token = JwtUtil.generateToken(user.getUserId().toString());
 
         //4) 로그인 성공 응답
         Map<String, Object> data = Map.of(
