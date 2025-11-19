@@ -26,4 +26,4 @@ logging:
 upstage:
   api-key: ${UPSTAGE_API_KEY}
   base-url: https://api.upstage.ai/v1
-  model: solar-1-mini
+  model: solar-pro2
