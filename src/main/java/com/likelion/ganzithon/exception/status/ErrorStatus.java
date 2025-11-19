@@ -23,6 +23,13 @@ public enum ErrorStatus {
     //로그인
     LOGIN_INVALID_PARAMETER(HttpStatus.UNAUTHORIZED, "AUTH401", "아이디 또는 비밀번호가 일치하지 않습니다."),
 
+    //PROFILE 4XX
+    //회원정보 수정
+    PROFILE_INVALID_PARAMETER(HttpStatus.BAD_REQUEST, "PROFILE400", "이메일 형식이 올바르지 않습니다."),
+    
+    //MYPAGE 4XX
+    MYREPORTS_NOT_FOUND(HttpStatus.NOT_FOUND, "MYREPORTS404", "작성한 제보가 없습니다."),
+
     // REPORT 4xx
     REPORT_BAD_REQUEST(HttpStatus.BAD_REQUEST, "REPORT400", "사고 제보 요청 값이 올바르지 않습니다."),
     REPORT_NOT_FOUND(HttpStatus.NOT_FOUND, "REPORT404", "사고 제보를 찾을 수 없습니다.");
