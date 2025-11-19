@@ -4,6 +4,7 @@ import com.likelion.ganzithon.auth.entity.User;
 import com.likelion.ganzithon.exception.Response;
 import com.likelion.ganzithon.report.dto.req.ReportCreateReq;
 import com.likelion.ganzithon.report.dto.req.ReportUpdateReq;
+import com.likelion.ganzithon.report.dto.res.ReportDetailWithAiRes;
 import com.likelion.ganzithon.report.dto.res.ReportRes;
 import com.likelion.ganzithon.report.dto.res.ReportUpdateRes;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,9 +23,10 @@ public interface ReportApi {
             @AuthenticationPrincipal User user,
             @Valid @RequestBody ReportCreateReq req);
 
-    @Operation(summary = "신고 상세 조회", description = "신고 ID로 상세 정보를 조회합니다.")
+    @Operation(summary = "신고 상세 조회 (AI 분석 포함", description = "신고 ID로 상세 정보와 AI 요약/위험도 분석을 함께 조회합니다. " +
+            "RAG 문서가 없으면 기본 요약만 반환합니다.")
     @GetMapping("/{id}")
-    Response<ReportRes> get(@PathVariable Long id);
+    Response<ReportDetailWithAiRes> get(@PathVariable Long id);
 
     @Operation(summary = "신고 수정", description = "신고 내용을 수정합니다.")
     @PutMapping("/{id}")
