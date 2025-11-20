@@ -75,6 +75,21 @@ public class AuthService {
         );
 
         return Response.success(SuccessStatus.LOGIN_SUCCESS, data);
+    }
+    // 로그아웃
+    public Response<?> logout(String token) {
 
+        // 1) 토큰 null 또는 빈 값 체크
+        if (token == null || token.isBlank()) {
+            throw new CustomException(ErrorStatus.LOGOUT_INVALID_TOKEN);
+        }
+
+        // 2) 토큰 유효성 검사
+        if (!JwtUtil.validateToken(token)) {
+            throw new CustomException(ErrorStatus.LOGOUT_INVALID_TOKEN);
+        }
+
+        // 3) 유효하면 그냥 성공 응답 (서버 상태 없음)
+        return Response.success(SuccessStatus.LOGOUT_SUCCESS, null);
     }
 }

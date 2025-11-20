@@ -1,6 +1,7 @@
 package com.likelion.ganzithon.auth.controller;
 
 import com.likelion.ganzithon.auth.dto.LoginRequest;
+import com.likelion.ganzithon.auth.dto.LogoutRequest;
 import com.likelion.ganzithon.auth.dto.SignupRequest;
 import com.likelion.ganzithon.auth.service.AuthService;
 import com.likelion.ganzithon.exception.Response;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
 
 @Tag(name = "Auth API", description = "인증 관련 API")
 @RestController
@@ -33,4 +36,11 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         return ResponseEntity.ok(authService.login(request));
     }
+
+    @PostMapping("/logout")
+    @Operation(summary = "로그아웃", description = "JWT 토큰을 검증하고 로그아웃 처리합니다.")
+    public Response<?> logout(@RequestBody LogoutRequest request) {
+        return authService.logout(request.token());
+    }
+
 }
