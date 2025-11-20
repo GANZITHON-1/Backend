@@ -5,6 +5,8 @@ import com.likelion.ganzithon.exception.status.ErrorStatus;
 import com.likelion.ganzithon.map.dto.MarkerDto;
 import com.likelion.ganzithon.publicdata.cctv.dto.CctvApiResponse;
 import com.likelion.ganzithon.publicdata.cctv.service.CctvApiCaller;
+import com.likelion.ganzithon.publicdata.emgbell.dto.EmgBellData;
+import com.likelion.ganzithon.publicdata.emgbell.service.EmgBellApiCaller;
 import com.likelion.ganzithon.report.domain.Report;
 import com.likelion.ganzithon.report.domain.SourceType;
 import com.likelion.ganzithon.report.repository.ReportRepository;
@@ -19,10 +21,14 @@ public class MapService {
 
     private final ReportRepository reportRepository;
     private final CctvApiCaller cctvApiCaller;
+    private final EmgBellApiCaller emgBellApiCaller;
 
-    public MapService(ReportRepository reportRepository, CctvApiCaller cctvApiCaller) {
+    public MapService(ReportRepository reportRepository,
+                      CctvApiCaller cctvApiCaller,
+                      EmgBellApiCaller emgBellApiCaller) {
         this.reportRepository = reportRepository;
         this.cctvApiCaller = cctvApiCaller;
+        this.emgBellApiCaller = emgBellApiCaller;
     }
 
     public List<MarkerDto> getMarkers(List<String> filters, double lat, double lng, double radiusKm) {
@@ -78,6 +84,43 @@ public class MapService {
             }
 
             totalMarkers.addAll(cctvMarkers);
+        }
+
+        // 2.2 공공 데이터(안전비상벨)
+        if (filters.contains("bell")) {
+
+            Long maxReportIdForBell = reports.stream()
+                    .map(Report::getId)
+                    .max(Comparator.naturalOrder())
+                    .orElse(0L);
+
+            long bellIdCounter = maxReportIdForBell + 1_000_000L;
+
+            List<EmgBellData> bells = emgBellApiCaller.fetchEmgBells(1, 1000);
+            List<MarkerDto> bellMarkers = new ArrayList<>();
+
+            for (EmgBellData bell : bells) {
+                if (!isWithinRadius(lat, lng, bell.latitude(), bell.longitude(), radiusKm)) {
+                    continue;
+                }
+
+                String address = bell.roadAddress() != null && !bell.roadAddress().isBlank()
+                        ? bell.roadAddress()
+                        : bell.lotAddress();
+
+                MarkerDto marker = new MarkerDto(
+                        bellIdCounter++,
+                        "안전비상벨",
+                        address,
+                        bell.latitude(),
+                        bell.longitude(),
+                        "bell",
+                        SourceType.PUBLIC
+                );
+                bellMarkers.add(marker);
+            }
+
+            totalMarkers.addAll(bellMarkers);
         }
 
         // 3. 결과 반환
