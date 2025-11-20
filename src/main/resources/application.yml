@@ -40,6 +40,9 @@ public:
     cctv-key: ${CCTV_API_KEY}
     cctv-domain: ${CCTV_API_DOMAIN}
 
+    emgbell-url: http://safemap.go.kr/openApiService/data/getCmmpoiEmgbellData.do
+    emgbell-key: ${EMGBELL_API_KEY}
+
 cloud:
   aws:
     s3:
