@@ -32,7 +32,9 @@ public enum SuccessStatus {
     AI_FALLBACK_SUMMARY(HttpStatus.OK, "AI201", "RAG 검색 결과가 없어 기본 요약 모델로 처리되었습니다."),
 
     //MAP
-    MAP_MARKER_SUCCESS(HttpStatus.OK, "MAP200", "필터 기준 근거리 마커 조회 성공.");
+    MAP_MARKER_SUCCESS(HttpStatus.OK, "MAP200", "필터 기준 근거리 마커 조회 성공."),
+    MAP_PUBLIC_DETAIL(HttpStatus.OK,"MAP_PUBLIC_DETAIL200","공공데이터 마커 상세 조회 성공");
+
 
     private final HttpStatus status;
     private final String code;
