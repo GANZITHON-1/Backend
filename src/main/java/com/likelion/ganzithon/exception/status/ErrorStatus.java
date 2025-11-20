@@ -36,7 +36,11 @@ public enum ErrorStatus {
 
     // AI
     AI_ANALYSIS_PENDING(HttpStatus.ACCEPTED, "AI202", "AI 분석이 아직 완료되지 않았습니다."),
-    AI_ANALYSIS_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "AI500", "AI 분석 중 오류가 발생했습니다.");
+    AI_ANALYSIS_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "AI500", "AI 분석 중 오류가 발생했습니다."),
+
+    // S3
+    S3_FILE_NOT_FOUND(HttpStatus.BAD_REQUEST, "S3_400", "업로드할 파일이 존재하지 않습니다."),
+    S3_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "S3_500", "이미지 업로드 중 오류가 발생했습니다.");
 
     private final HttpStatus status;
     private final String code;
