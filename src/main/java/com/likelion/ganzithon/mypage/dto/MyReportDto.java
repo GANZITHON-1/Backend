@@ -5,7 +5,9 @@ import com.likelion.ganzithon.report.domain.Report;
 public record MyReportDto(
         Long reportId,
         String title,
-        String location
+        String location,
+        Double locationLat,
+        Double LocationLng
 ) {
     public static MyReportDto from(Report report) {
         // roadAddress가 있으면 roadAddress 사용, 없으면 lotAddress 사용
@@ -16,7 +18,9 @@ public record MyReportDto(
         return new MyReportDto(
                 report.getId(),
                 report.getTitle(),
-                location
+                location,
+                report.getLatitude(),
+                report.getLongitude()
         );
     }
 }
