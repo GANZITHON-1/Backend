@@ -33,6 +33,13 @@ upstage:
   base-url: https://api.upstage.ai/v1
   model: solar-pro2
 
+
+public:
+  api:
+    cctv-url: https://api.vworld.kr/req/data
+    cctv-key: ${CCTV_API_KEY}
+    cctv-domain: ${CCTV_API_DOMAIN}
+
 cloud:
   aws:
     s3:
@@ -41,4 +48,3 @@ cloud:
       access-key: ${AWS_ACCESS_KEY_ID}
       secret-key: ${AWS_SECRET_ACCESS_KEY}
       base-url: ${AWS_S3_BASE_URL}
-
