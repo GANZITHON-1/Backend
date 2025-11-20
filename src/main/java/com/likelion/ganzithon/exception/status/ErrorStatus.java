@@ -24,6 +24,8 @@ public enum ErrorStatus {
     LOGIN_INVALID_PARAMETER(HttpStatus.UNAUTHORIZED, "AUTH401", "아이디 또는 비밀번호가 일치하지 않습니다."),
     //로그아웃
     LOGOUT_INVALID_TOKEN(HttpStatus.BAD_REQUEST, "AUTH401", "유효하지 않은 토큰입니다."),
+    //탈퇴
+    DELETE_INVALID_TOKEN(HttpStatus.BAD_REQUEST, "AUTH401", "유효하지 않은 토큰입니다."),
 
     //PROFILE 4XX
     //회원정보 수정
