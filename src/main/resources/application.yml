@@ -33,13 +33,13 @@ upstage:
   base-url: https://api.upstage.ai/v1
   model: solar-pro2
 
-
 public:
   api:
     cctv-url: https://api.vworld.kr/req/data
     cctv-key: ${CCTV_API_KEY}
     cctv-domain: ${CCTV_API_DOMAIN}
-
+    traffic-url: https://opendata.koroad.or.kr/data/rest/frequentzone/pedstrians
+    traffic-key: ${TRAFFIC_API_KEY}
     emgbell-url: http://safemap.go.kr/openApiService/data/getCmmpoiEmgbellData.do
     emgbell-key: ${EMGBELL_API_KEY}
 
