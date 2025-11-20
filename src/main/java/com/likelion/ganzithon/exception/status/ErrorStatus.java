@@ -41,6 +41,11 @@ public enum ErrorStatus {
     //MAP
     MAP_NOT_FOUND(HttpStatus.NOT_FOUND, "MAP404", "해당 조건의 마커가 없습니다.");
 
+    // S3
+    S3_FILE_NOT_FOUND(HttpStatus.BAD_REQUEST, "S3_400", "업로드할 파일이 존재하지 않습니다."),
+    S3_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "S3_500", "이미지 업로드 중 오류가 발생했습니다.");
+
+
     private final HttpStatus status;
     private final String code;
     private final String message;
