@@ -40,6 +40,9 @@ public:
     cctv-key: ${CCTV_API_KEY}
     cctv-domain: ${CCTV_API_DOMAIN}
 
+    complaint-url: https://apis.data.go.kr/1140100/minPotholeLatLonInfo
+    complaint-key: ${COMPLAINT_API_KEY}
+
 cloud:
   aws:
     s3:

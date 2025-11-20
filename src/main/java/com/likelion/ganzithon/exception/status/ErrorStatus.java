@@ -39,7 +39,7 @@ public enum ErrorStatus {
     AI_ANALYSIS_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "AI500", "AI 분석 중 오류가 발생했습니다."),
 
     //MAP
-    MAP_NOT_FOUND(HttpStatus.NOT_FOUND, "MAP404", "해당 조건의 마커가 없습니다.");
+    MAP_NOT_FOUND(HttpStatus.NOT_FOUND, "MAP404", "해당 조건의 마커가 없습니다."),
 
     // S3
     S3_FILE_NOT_FOUND(HttpStatus.BAD_REQUEST, "S3_400", "업로드할 파일이 존재하지 않습니다."),

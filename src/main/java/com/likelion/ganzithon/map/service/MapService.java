@@ -5,6 +5,8 @@ import com.likelion.ganzithon.exception.status.ErrorStatus;
 import com.likelion.ganzithon.map.dto.MarkerDto;
 import com.likelion.ganzithon.publicdata.cctv.dto.CctvApiResponse;
 import com.likelion.ganzithon.publicdata.cctv.service.CctvApiCaller;
+import com.likelion.ganzithon.publicdata.complaint.dto.ComplaintApiResponse;
+import com.likelion.ganzithon.publicdata.complaint.service.ComplaintApiCaller;
 import com.likelion.ganzithon.report.domain.Report;
 import com.likelion.ganzithon.report.domain.SourceType;
 import com.likelion.ganzithon.report.repository.ReportRepository;
@@ -19,10 +21,14 @@ public class MapService {
 
     private final ReportRepository reportRepository;
     private final CctvApiCaller cctvApiCaller;
+    private final ComplaintApiCaller complaintApiCaller;
 
-    public MapService(ReportRepository reportRepository, CctvApiCaller cctvApiCaller) {
+    public MapService(ReportRepository reportRepository,
+                      CctvApiCaller cctvApiCaller,
+                      ComplaintApiCaller complaintApiCaller) {
         this.reportRepository = reportRepository;
         this.cctvApiCaller = cctvApiCaller;
+        this.complaintApiCaller = complaintApiCaller;
     }
 
     public List<MarkerDto> getMarkers(List<String> filters, double lat, double lng, double radiusKm) {
@@ -78,6 +84,44 @@ public class MapService {
             }
 
             totalMarkers.addAll(cctvMarkers);
+        }
+
+        // 2.2 공공 데이터(민원)
+        if(filters.contains("complaint")) {
+
+            long baseId = totalMarkers.stream()
+                    .map(MarkerDto::markerId)
+                    .max(Comparator.naturalOrder())
+                    .orElse(0L);
+            long complaintIdCounter = baseId + 1;
+
+            List<ComplaintApiResponse.Item> items = complaintApiCaller.fetchComplaintItems();
+            List<MarkerDto> complaintMarkers = new ArrayList<>();
+
+            for (ComplaintApiResponse.Item item : items) {
+                if (item.eventLat() == null || item.eventLon() == null) {
+                    continue;
+                }
+
+                double latValue = Double.parseDouble(item.eventLat());
+                double lngValue = Double.parseDouble(item.eventLon());
+
+                if (!isWithinRadius(lat, lng, latValue, lngValue, radiusKm)) {
+                    continue;
+                }
+
+                MarkerDto marker = new MarkerDto(
+                        complaintIdCounter++,
+                        "민원 발생",
+                        "",
+                        latValue,
+                        lngValue,
+                        "complaint",
+                        SourceType.PUBLIC
+                );
+                complaintMarkers.add(marker);
+            }
+            totalMarkers.addAll(complaintMarkers);
         }
 
         // 3. 결과 반환
