@@ -85,30 +85,5 @@ public class MapService {
         return distance <= radiusKm;
     }
 
-    // 디버깅
-    public void printCctvMarkers(double lat, double lng, double radiusKm) {
-        List<MarkerDto> markers = cctvService.getCctvMarkers(lat, lng, radiusKm).findValues("features").stream()
-                .map(jsonNode -> new MarkerDto(
-                        jsonNode.get("id").asLong(),
-                        jsonNode.get("properties").get("cctvname").asText(),
-                        jsonNode.get("properties").get("locate").asText(),
-                        jsonNode.get("geometry").get("coordinates").get(1).asDouble(),
-                        jsonNode.get("geometry").get("coordinates").get(0).asDouble(),
-                        "cctv",
-                        null
-                ))
-                .toList();
 
-        if (markers.isEmpty()) {
-            System.out.println("CCTV 마커가 없습니다.");
-            return;
-        }
-
-        System.out.println("총 CCTV 마커 수: " + markers.size());
-        for (MarkerDto m : markers) {
-            System.out.println("ID: " + m.markerId() + ", Title: " + m.title() +
-                    ", Address: " + m.location() +
-                    ", Lat: " + m.lat() + ", Lng: " + m.lng());
-        }
-    }
 }
