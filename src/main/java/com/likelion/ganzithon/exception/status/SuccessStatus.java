@@ -29,7 +29,10 @@ public enum SuccessStatus {
 
     // AI
     AI_REPORT_DETAIL(HttpStatus.OK, "AI200", "RAG 기반 사고 제보 상세 및 요약 조회 성공"),
-    AI_FALLBACK_SUMMARY(HttpStatus.OK, "AI201", "RAG 검색 결과가 없어 기본 요약 모델로 처리되었습니다.");
+    AI_FALLBACK_SUMMARY(HttpStatus.OK, "AI201", "RAG 검색 결과가 없어 기본 요약 모델로 처리되었습니다."),
+
+    //MAP
+    MAP_MARKER_SUCCESS(HttpStatus.OK, "MAP200", "필터 기준 근거리 마커 조회 성공.");
 
     private final HttpStatus status;
     private final String code;

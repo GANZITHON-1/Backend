@@ -36,7 +36,10 @@ public enum ErrorStatus {
 
     // AI
     AI_ANALYSIS_PENDING(HttpStatus.ACCEPTED, "AI202", "AI 분석이 아직 완료되지 않았습니다."),
-    AI_ANALYSIS_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "AI500", "AI 분석 중 오류가 발생했습니다.");
+    AI_ANALYSIS_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "AI500", "AI 분석 중 오류가 발생했습니다."),
+
+    //MAP
+    MAP_NOT_FOUND(HttpStatus.NOT_FOUND, "MAP404", "해당 조건의 마커가 없습니다.");
 
     private final HttpStatus status;
     private final String code;
