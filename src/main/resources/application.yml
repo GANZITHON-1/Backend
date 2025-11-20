@@ -32,3 +32,4 @@ public:
   api:
     cctv-url: https://api.vworld.kr/req/data
     cctv-key: ${CCTV_API_KEY}
+    cctv-domain: ${CCTV_API_DOMAIN}
