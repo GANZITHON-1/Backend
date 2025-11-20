@@ -32,5 +32,4 @@ public class MapController {
         return Response.success(SuccessStatus.MAP_MARKER_SUCCESS,
                 mapService.getMarkers(filters, lat, lng, radius));
     }
-
 }

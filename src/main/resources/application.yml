@@ -27,3 +27,8 @@ upstage:
   api-key: ${UPSTAGE_API_KEY}
   base-url: https://api.upstage.ai/v1
   model: solar-pro2
+
+public:
+  api:
+    cctv-url: https://api.vworld.kr/req/data
+    cctv-key: ${CCTV_API_KEY}
