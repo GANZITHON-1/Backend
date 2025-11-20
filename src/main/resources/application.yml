@@ -2,6 +2,11 @@ spring:
   profiles:
     active: prod
 
+  servlet:
+    multipart:
+      max-file-size: ${SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE:10MB}
+      max-request-size: ${SPRING_SERVLET_MULTIPART_MAX_REQUEST_SIZE:10MB}
+
   datasource:
     url: ${spring.datasource.url}
     username: ${spring.datasource.username}
@@ -27,3 +32,13 @@ upstage:
   api-key: ${UPSTAGE_API_KEY}
   base-url: https://api.upstage.ai/v1
   model: solar-pro2
+
+cloud:
+  aws:
+    s3:
+      bucket: ${AWS_S3_BUCKET}
+      region: ${AWS_S3_REGION}
+      access-key: ${AWS_ACCESS_KEY_ID}
+      secret-key: ${AWS_SECRET_ACCESS_KEY}
+      base-url: ${AWS_S3_BASE_URL}
+
