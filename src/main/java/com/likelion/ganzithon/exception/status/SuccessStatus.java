@@ -15,6 +15,10 @@ public enum SuccessStatus {
     SIGNUP_SUCCESS(HttpStatus.OK, "AUTH200", "회원가입 성공"),
     //로그인
     LOGIN_SUCCESS(HttpStatus.OK, "AUTH200", "로그인 성공."),
+    //로그아웃
+    LOGOUT_SUCCESS(HttpStatus.OK, "AUTH200", "로그아웃 성공."),
+    //탈퇴
+    DELETE_SUCCESS(HttpStatus.OK, "AUTH200", "계정이 성공적으로 삭제되었습니다."),
 
     //POFILE
     PROFILE_UPDATE_SUCCESS(HttpStatus.OK, "PROFILE200", "성공적으로 수정되었습니다."),

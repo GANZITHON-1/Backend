@@ -12,6 +12,7 @@ import com.likelion.ganzithon.exception.status.SuccessStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import java.util.Map;
 
 @Service
@@ -75,6 +76,40 @@ public class AuthService {
         );
 
         return Response.success(SuccessStatus.LOGIN_SUCCESS, data);
+    }
 
+    // 로그아웃
+    public Response<?> logout(String token) {
+
+        // 1) 토큰 null 또는 빈 값 체크
+        if (token == null || token.isBlank()) {
+            throw new CustomException(ErrorStatus.LOGOUT_INVALID_TOKEN);
+        }
+
+        // 2) 토큰 유효성 검사
+        if (!JwtUtil.validateToken(token)) {
+            throw new CustomException(ErrorStatus.LOGOUT_INVALID_TOKEN);
+        }
+
+        // 3) 유효하면 그냥 성공 응답 (서버 상태 없음)
+        return Response.success(SuccessStatus.LOGOUT_SUCCESS, null);
+    }
+
+    // 회원 탈퇴
+    public Response<?> deleteUser(Long userId, String token) {
+        // 1) 토큰 null 또는 유효성 검사
+        if (token == null || token.isBlank() || !JwtUtil.validateToken(token)) {
+            throw new CustomException(ErrorStatus.DELETE_INVALID_TOKEN);
+        }
+
+        // 2) 사용자 존재 확인
+        userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorStatus.USER_NOT_FOUND));
+
+        // 3) 사용자 삭제
+        userRepository.deleteById(userId);
+
+        // 4) 성공 응답
+        return Response.success(SuccessStatus.DELETE_SUCCESS, null);
     }
 }
