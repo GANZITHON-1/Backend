@@ -3,6 +3,7 @@ package com.likelion.ganzithon.map.service;
 import com.likelion.ganzithon.exception.CustomException;
 import com.likelion.ganzithon.exception.status.ErrorStatus;
 import com.likelion.ganzithon.map.dto.MarkerDto;
+import com.likelion.ganzithon.map.dto.PublicMarkerDetailDto;
 import com.likelion.ganzithon.map.dto.RegionCodeDto;
 import com.likelion.ganzithon.publicdata.cctv.dto.CctvApiResponse;
 import com.likelion.ganzithon.publicdata.cctv.service.CctvApiCaller;
@@ -16,13 +17,15 @@ import com.likelion.ganzithon.report.repository.ReportRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 @Service
 public class MapService {
+
+    private static final long CCTV_ID_OFFSET = 1_000_000L;
+    private static final long BELL_ID_OFFSET = 2_000_000L;
+    private static final long TRAFFIC_ID_OFFSET = 3_000_000L;
 
     private final ReportRepository reportRepository;
     private final CctvApiCaller cctvApiCaller;
@@ -30,11 +33,13 @@ public class MapService {
     private final TrafficApiCaller trafficApiCaller;
     private final RegionService regionService;
 
+    private final Map<Long, CctvApiResponse.Feature> cctvCache = new HashMap<>();
+
     public MapService(ReportRepository reportRepository,
                       CctvApiCaller cctvApiCaller,
                       EmgBellApiCaller emgBellApiCaller,
-                      TrafficApiCaller trafficApiCaller, RegionService regionService
-    ) {
+                      TrafficApiCaller trafficApiCaller,
+                      RegionService regionService) {
         this.reportRepository = reportRepository;
         this.cctvApiCaller = cctvApiCaller;
         this.emgBellApiCaller = emgBellApiCaller;
@@ -43,12 +48,10 @@ public class MapService {
     }
 
     public List<MarkerDto> getMarkers(List<String> filters, double lat, double lng, double radiusKm) {
-
-        List<MarkerDto> totalMarkers = new ArrayList<>();
+        List<Report> reports = reportRepository.findAll();
 
         // 1. 사용자 제보
-        List<Report> reports = reportRepository.findAll();
-        List<MarkerDto> reportMarkers = reports.stream()
+        List<MarkerDto> totalMarkers = new ArrayList<>(reports.stream()
                 .filter(report -> filters.contains(report.getSourceType().name().toLowerCase()))
                 .filter(report -> isWithinRadius(lat, lng, report.getLatitude(), report.getLongitude(), radiusKm))
                 .map(report -> new MarkerDto(
@@ -60,30 +63,19 @@ public class MapService {
                         report.getSourceType().name().toLowerCase(),
                         report.getSourceType()
                 ))
-                .toList();
+                .toList());
 
-        totalMarkers.addAll(reportMarkers);
-
-        // 2. 공공 데이터(CCTV)
+        // 2. CCTV
         if (filters.contains("cctv")) {
-
-            Long maxReportId = reports.stream()
-                    .map(Report::getId)
-                    .max(Comparator.naturalOrder())
-                    .orElse(0L);
-
-            // CCTV ID의 시작점 설정
-            long cctvIdCounter = maxReportId + 1L;
-
             List<CctvApiResponse.Feature> features = cctvApiCaller.fetchCctvFeatures(lat, lng, radiusKm);
-            List<MarkerDto> cctvMarkers = new ArrayList<>();
+            long cctvIdCounter = CCTV_ID_OFFSET;
 
             for (CctvApiResponse.Feature feature : features) {
                 double lngValue = feature.geometry().coordinates().get(0);
                 double latValue = feature.geometry().coordinates().get(1);
 
                 MarkerDto marker = new MarkerDto(
-                        cctvIdCounter++,
+                        cctvIdCounter,
                         "CCTV 설치",
                         feature.properties().locate(),
                         latValue,
@@ -91,34 +83,22 @@ public class MapService {
                         "cctv",
                         SourceType.PUBLIC
                 );
-                cctvMarkers.add(marker);
-            }
 
-            totalMarkers.addAll(cctvMarkers);
+                totalMarkers.add(marker);
+                cctvCache.put(cctvIdCounter, feature); // 캐시에 저장
+                cctvIdCounter++;
+            }
         }
 
-        // 2.2 공공 데이터(안전비상벨)
+        // 3. 안전비상벨
         if (filters.contains("bell")) {
-
-            Long maxReportIdForBell = reports.stream()
-                    .map(Report::getId)
-                    .max(Comparator.naturalOrder())
-                    .orElse(0L);
-
-            long bellIdCounter = maxReportIdForBell + 1_000_000L;
-
+            long bellIdCounter = BELL_ID_OFFSET;
             List<EmgBellData> bells = emgBellApiCaller.fetchEmgBells(1, 1000);
-            List<MarkerDto> bellMarkers = new ArrayList<>();
 
             for (EmgBellData bell : bells) {
-                if (!isWithinRadius(lat, lng, bell.latitude(), bell.longitude(), radiusKm)) {
-                    continue;
-                }
+                if (!isWithinRadius(lat, lng, bell.latitude(), bell.longitude(), radiusKm)) continue;
 
-                String address = bell.roadAddress() != null && !bell.roadAddress().isBlank()
-                        ? bell.roadAddress()
-                        : bell.lotAddress();
-
+                String address = bell.roadAddress() != null && !bell.roadAddress().isBlank() ? bell.roadAddress() : bell.lotAddress();
                 MarkerDto marker = new MarkerDto(
                         bellIdCounter++,
                         "안전비상벨",
@@ -128,36 +108,22 @@ public class MapService {
                         "bell",
                         SourceType.PUBLIC
                 );
-                bellMarkers.add(marker);
+                totalMarkers.add(marker);
             }
-
-            totalMarkers.addAll(bellMarkers);
         }
 
-        // 2.3 공공 데이터 (Traffic)
+        // 4. Traffic
         if (filters.contains("traffic")) {
-
-            // Traffic 마커 ID는 무조건 1부터 시작하도록 초기화
-            long trafficIdCounter = 2_000_000L;
-
-            // 동적 지역 코드 조회
+            long trafficIdCounter = TRAFFIC_ID_OFFSET;
             RegionCodeDto regionCodes = regionService.getRegionCodesByCoordinates(lat, lng);
-            String siDo = regionCodes.siDo();
-            String guGun = regionCodes.guGun();
-
-            List<TrafficApiResponse.Item> items = trafficApiCaller.fetchTrafficDataByRegion(siDo, guGun);
-            List<MarkerDto> trafficMarkers = new ArrayList<>();
+            List<TrafficApiResponse.Item> items = trafficApiCaller.fetchTrafficDataByRegion(regionCodes.siDo(), regionCodes.guGun());
 
             for (TrafficApiResponse.Item item : items) {
                 double latValue = Double.parseDouble(item.laCrd().toString());
                 double lngValue = Double.parseDouble(item.loCrd().toString());
-
-                if (!isWithinRadius(lat, lng, latValue, lngValue, radiusKm)) {
-                    continue;
-                }
+                if (!isWithinRadius(lat, lng, latValue, lngValue, radiusKm)) continue;
 
                 String title = String.format("%s 다발지역 (사고: %d건)", item.spotNm(), item.occrrncCnt());
-
                 MarkerDto marker = new MarkerDto(
                         trafficIdCounter++,
                         title,
@@ -167,16 +133,10 @@ public class MapService {
                         "traffic",
                         SourceType.PUBLIC
                 );
-
-                trafficMarkers.add(marker);
+                totalMarkers.add(marker);
             }
-
-            totalMarkers.addAll(trafficMarkers);
         }
 
-
-
-        // 4. 결과 반환
         if (totalMarkers.isEmpty()) {
             throw new CustomException(ErrorStatus.MAP_NOT_FOUND);
         }
@@ -184,7 +144,63 @@ public class MapService {
         return totalMarkers;
     }
 
-    // 거리 계산
+    public PublicMarkerDetailDto getPublicMarkerDetail(Long id) {
+        // CCTV
+        if (id >= CCTV_ID_OFFSET && id < BELL_ID_OFFSET) {
+            CctvApiResponse.Feature feature = cctvCache.get(id);
+            if (feature == null) throw new CustomException(ErrorStatus.MAP_NOT_FOUND);
+
+            return new PublicMarkerDetailDto(
+                    id,
+                    "PUBLIC",
+                    "CCTV 설치",
+                    "cctv",
+                    feature.properties().locate(),
+                    null,
+                    feature.geometry().coordinates().get(1),
+                    feature.geometry().coordinates().get(0),
+                    null
+            );
+        }
+
+        // 안전비상벨
+        if (id >= BELL_ID_OFFSET && id < TRAFFIC_ID_OFFSET) {
+            List<EmgBellData> bells = emgBellApiCaller.fetchEmgBells(1, 1000);
+            EmgBellData bell = bells.get((int)(id - BELL_ID_OFFSET));
+            return new PublicMarkerDetailDto(
+                    id,
+                    "PUBLIC",
+                    "안전비상벨",
+                    "bell",
+                    bell.roadAddress() != null && !bell.roadAddress().isBlank() ? bell.roadAddress() : bell.lotAddress(),
+                    null,
+                    bell.latitude(),
+                    bell.longitude(),
+                    null
+            );
+        }
+
+        // Traffic
+        if (id >= TRAFFIC_ID_OFFSET) {
+            RegionCodeDto regionCodes = regionService.getRegionCodesByCoordinates(0,0);
+            List<TrafficApiResponse.Item> items = trafficApiCaller.fetchTrafficDataByRegion(regionCodes.siDo(), regionCodes.guGun());
+            TrafficApiResponse.Item item = items.get((int)(id - TRAFFIC_ID_OFFSET));
+            return new PublicMarkerDetailDto(
+                    id,
+                    "PUBLIC",
+                    String.format("%s 다발지역 (사고: %d건)", item.spotNm(), item.occrrncCnt()),
+                    "traffic",
+                    item.sidoSggNm() + " " + item.spotNm(),
+                    null,
+                    Double.parseDouble(item.laCrd().toString()),
+                    Double.parseDouble(item.loCrd().toString()),
+                    null
+            );
+        }
+
+        throw new CustomException(ErrorStatus.MAP_NOT_FOUND);
+    }
+
     private boolean isWithinRadius(double centerLat, double centerLng,
                                    double targetLat, double targetLng, double radiusKm) {
         final int EARTH_RADIUS = 6371;
