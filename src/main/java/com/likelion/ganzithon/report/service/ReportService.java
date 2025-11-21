@@ -83,6 +83,9 @@ public class ReportService {
                 .orElseThrow(() ->
                         new CustomException(ErrorStatus.REPORT_NOT_FOUND));
 
+        reportAnalysisRepository.findByReport_Id(id)
+                .ifPresent(reportAnalysisRepository::delete);
+
         reportRepository.delete(report);
     }
 }
