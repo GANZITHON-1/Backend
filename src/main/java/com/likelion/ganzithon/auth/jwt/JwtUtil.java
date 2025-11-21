@@ -4,12 +4,17 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 
 public class JwtUtil {
-    private static final Key SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-    private static final long EXPIRATION_TIME = 1000 * 60 * 60;
+
+    private static final String SECRET =
+            System.getenv().getOrDefault("JWT_SECRET", "dev-secret-key-change-this-in-prod-1234567890");
+
+    private static final Key SECRET_KEY = Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
+    private static final long EXPIRATION_TIME = 1000 * 60 * 60; // 1시간
 
     // 토큰 생성
     public static String generateToken(String userId) {
@@ -20,7 +25,7 @@ public class JwtUtil {
                 .setSubject(userId)
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
-                .signWith(SECRET_KEY)
+                .signWith(SECRET_KEY, SignatureAlgorithm.HS256)
                 .compact();
     }
 
