@@ -12,6 +12,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.time.Duration;
 
@@ -40,6 +42,18 @@ public class SecurityConfig {
     public RestTemplate restTemplate(RestTemplateBuilder builder) {
         return builder.connectTimeout(Duration.ofSeconds(5)).readTimeout(Duration.ofSeconds(5))    // 읽기 시간 초과 설정
                 .build();
+    }
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**")
+                        .allowedOrigins("https://frontend-eight-lac-80.vercel.app")
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                        .allowCredentials(true);
+            }
+        };
     }
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
