@@ -71,7 +71,7 @@ public class SecurityConfig {
         config.setAllowedOrigins(List.of(
                 "https://frontend-eight-lac-80.vercel.app",
                 "https://salpyeo.store", // 혹시나 몰라서 넣음
-                "http://localhost:3000"
+                "http://localhost:5173"
         ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
