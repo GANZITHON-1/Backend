@@ -43,7 +43,7 @@ public class SecurityConfig {
 
     @Bean
     public RestTemplate restTemplate(RestTemplateBuilder builder) {
-        return builder.connectTimeout(Duration.ofSeconds(60)).readTimeout(Duration.ofSeconds(60))    // 읽기 시간 초과 설정
+        return builder.connectTimeout(Duration.ofSeconds(15)).readTimeout(Duration.ofSeconds(15))    // 읽기 시간 초과 설정
                 .build();
     }
     @Bean
