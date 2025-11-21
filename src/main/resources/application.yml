@@ -42,6 +42,8 @@ public:
     traffic-key: ${TRAFFIC_API_KEY}
     emgbell-url: http://safemap.go.kr/openApiService/data/getCmmpoiEmgbellData.do
     emgbell-key: ${EMGBELL_API_KEY}
+    its-cctv-url: https://openapi.its.go.kr:9443/cctvInfo
+    its-cctv-key: ${ITS_CCTV_API_KEY}
 
 cloud:
   aws:
