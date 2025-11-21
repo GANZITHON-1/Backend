@@ -80,8 +80,8 @@ public class MapService {
                 ))
                 .toList());
 
-        // 2. CCTV (VWorld WFS)
-        if (filters.contains("cctv")) {
+        // 2. CCTV (VWorld WFS) -filter cctv2로 변경 -api 오류로 인해 보류
+        if (filters.contains("cctv2")) {
             List<CctvApiResponse.Feature> features = cctvApiCaller.fetchCctvFeatures(lat, lng, radiusKm);
             long idCounter = CCTV_ID_OFFSET;
 
@@ -97,15 +97,15 @@ public class MapService {
                         feature.properties().locate(),
                         latValue,
                         lngValue,
-                        "cctv",
+                        "cctv2",
                         SourceType.PUBLIC
                 ));
                 cctvCache.put(markerId, feature);
             }
         }
 
-        // 2-2. CCTV2 (ITS API)
-        if (filters.contains("cctv2")) {
+        // 2-2. CCTV2 (ITS API) -filter cctv로 변경
+        if (filters.contains("cctv")) {
             List<Cctv2ApiResponse.CctvItem> items = cctv2ApiCaller.fetchCctvFeatures(lat, lng, radiusKm);
             long idCounter = CCTV2_ID_OFFSET;
             if (items != null) {
@@ -124,7 +124,7 @@ public class MapService {
                                 item.cctvName(),
                                 latValue,
                                 lngValue,
-                                "cctv2",
+                                "cctv",
                                 SourceType.PUBLIC
                         ));
                         cctv2Cache.put(markerId, item);
@@ -207,7 +207,7 @@ public class MapService {
                     id,
                     "PUBLIC",
                     "CCTV 설치 (VWorld)",
-                    "cctv",
+                    "cctv2",
                     feature.properties().locate(),
                     null,
                     feature.geometry().coordinates().get(1),
@@ -266,7 +266,7 @@ public class MapService {
                     id,
                     "PUBLIC",
                     item.cctvName(),
-                    "cctv2",
+                    "cctv",
                     item.cctvName(),
                     null,
                     latValue,
