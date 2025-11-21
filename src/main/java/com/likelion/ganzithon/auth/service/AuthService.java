@@ -72,7 +72,9 @@ public class AuthService {
         //4) 로그인 성공 응답
         Map<String, Object> data = Map.of(
                 "userId", user.getUserId(),
-                "token", token
+                "token", token,
+                "name", user.getName(),
+                "email", user.getEmail()
         );
 
         return Response.success(SuccessStatus.LOGIN_SUCCESS, data);
