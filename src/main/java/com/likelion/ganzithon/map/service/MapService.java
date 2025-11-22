@@ -66,25 +66,29 @@ public class MapService {
         bellCache.clear();
         trafficCache.clear();
 
-        List<MarkerDto> totalMarkers = new ArrayList<>();
+        List<Report> reports = reportRepository.findAll();
+        List<MarkerDto> totalMarkers = new ArrayList<>(reports.stream()
+                .filter(report -> filters.contains(report.getSourceType().name().toLowerCase()))
+                .filter(report -> isWithinRadius(lat, lng, report.getLatitude(), report.getLongitude(), radiusKm))
+                .map(report -> {
+                    // 도로명 우선, 없으면 지번
+                    String location = report.getRoadAddress() != null && !report.getRoadAddress().isBlank()
+                            ? report.getRoadAddress()
+                            : report.getLotAddress();
 
-        // 1. Report 마커
-        reportRepository.findAll().forEach(report -> {
-            if (!filters.contains(report.getSourceType().name().toLowerCase())) return;
-            if (!isWithinRadius(lat, lng, report.getLatitude(), report.getLongitude(), radiusKm)) return;
+                    return new MarkerDto(
+                            report.getId(),
+                            report.getTitle(),
+                            location,
+                            report.getLatitude(),
+                            report.getLongitude(),
+                            report.getSourceType().name().toLowerCase(),
+                            report.getSourceType()
+                    );
+                })
+                .toList());
 
-            totalMarkers.add(new MarkerDto(
-                    report.getId(),
-                    report.getTitle(),
-                    report.getLotAddress(),
-                    report.getLatitude(),
-                    report.getLongitude(),
-                    report.getSourceType().name().toLowerCase(),
-                    report.getSourceType()
-            ));
-        });
-
-        // 2. CCTV (VWorld WFS)
+        // 2. CCTV (VWorld WFS) -filter cctv2로 변경 -api 오류로 인해 보류
         if (filters.contains("cctv2")) {
             List<CctvApiResponse.Feature> features = cctvApiCaller.fetchCctvFeatures(lat, lng, radiusKm);
             long idCounter = CCTV_ID_OFFSET;
