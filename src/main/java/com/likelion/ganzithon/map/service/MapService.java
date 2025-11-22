@@ -69,15 +69,22 @@ public class MapService {
         List<MarkerDto> totalMarkers = new ArrayList<>(reports.stream()
                 .filter(report -> filters.contains(report.getSourceType().name().toLowerCase()))
                 .filter(report -> isWithinRadius(lat, lng, report.getLatitude(), report.getLongitude(), radiusKm))
-                .map(report -> new MarkerDto(
-                        report.getId(),
-                        report.getTitle(),
-                        report.getLotAddress(),
-                        report.getLatitude(),
-                        report.getLongitude(),
-                        report.getSourceType().name().toLowerCase(),
-                        report.getSourceType()
-                ))
+                .map(report -> {
+                    // 도로명 우선, 없으면 지번
+                    String location = report.getRoadAddress() != null && !report.getRoadAddress().isBlank()
+                            ? report.getRoadAddress()
+                            : report.getLotAddress();
+
+                    return new MarkerDto(
+                            report.getId(),
+                            report.getTitle(),
+                            location,
+                            report.getLatitude(),
+                            report.getLongitude(),
+                            report.getSourceType().name().toLowerCase(),
+                            report.getSourceType()
+                    );
+                })
                 .toList());
 
         // 2. CCTV (VWorld WFS) -filter cctv2로 변경 -api 오류로 인해 보류
