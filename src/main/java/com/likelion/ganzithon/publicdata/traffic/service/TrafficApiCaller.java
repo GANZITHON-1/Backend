@@ -39,11 +39,11 @@ public class TrafficApiCaller {
                 .queryParam("guGun", guGun)
                 .queryParam("type", "json")
                 .queryParam("numOfRows", 100)
-                .encode(StandardCharsets.UTF_8)     //여기서 인코딩....
+                .encode(StandardCharsets.UTF_8)
                 .build(true)
                 .toUri();
 
-        log.info("2. Final Encoded URI: {}", uri);
+        log.info("Traffic API 호출 URI: {}", uri);
 
         try {
             TrafficApiResponse response = restTemplate.getForObject(uri, TrafficApiResponse.class);
@@ -78,19 +78,16 @@ public class TrafficApiCaller {
                     .collect(Collectors.toList());
 
         } catch (Exception e) {
-            log.error("Failed to fetch Traffic data from Koroad API.", e);
+            log.error("Traffic API 호출 실패", e);
             return Collections.emptyList();
         }
     }
 
     private Double convertToDouble(String value) {
-        if (value == null || value.isEmpty()) {
-            return null;
-        }
-        try {
-            return Double.parseDouble(value);
-        } catch (NumberFormatException e) {
-            log.error("Failed to parse coordinate value: {}", value, e);
+        if (value == null || value.isEmpty()) return null;
+        try { return Double.parseDouble(value); }
+        catch (NumberFormatException e) {
+            log.error("좌표 변환 실패: {}", value, e);
             return null;
         }
     }
