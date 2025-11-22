@@ -194,11 +194,6 @@ public class MapService {
                 trafficCache.put(markerId, item);
             }
         }
-
-        if (totalMarkers.isEmpty()) {
-            throw new CustomException(ErrorStatus.MAP_NOT_FOUND);
-        }
-
         return totalMarkers;
     }
 
